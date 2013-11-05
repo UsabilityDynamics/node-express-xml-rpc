@@ -1,34 +1,51 @@
 {
-  "name": "xrpc",
+  "name": "express-xml-rpc",
   "version": "0.0.1",
-  "main": "./xmlrpc.js",
+  "main": "./lib/express-xml-rpc.js",
   "dependencies": {
     "node-xml": ">= 1.0.0"
   },
   "description": "Express middleware and router support for XML-RPC",
   "directories": {
-    "example": "example",
-    "test": "test"
+    "doc": "./static/codex",
+    "bin": "./bin",
+    "lib": "./lib",
+    "example": "./example",
+    "test": "./test"
   },
   "devDependencies": {
-	"express": "3.x.x",
-	"xmlrpc": "*"
+    "grunt-contrib-symlink": "~0.2.0",
+    "grunt-contrib-yuidoc": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-less": "~0.8.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-jscoverage": "~0.0.3",
+    "grunt-markdown": "~0.4.0",
+    "grunt-mocha-cli": "~1.3.0",
+    "grunt-shell": "~0.5.0",
+    "express": "3.x.x",
+    "xmlrpc": "*"
   },
   "scripts": {
     "test": "node ./test/test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fshost/xrpc.git"
+    "url": "git+ssh://git@github.com:UsabilityDynamics/node-express-xml-rpc#master"
   },
   "keywords": [
-    "node.js",
-    "express",
-    "xml",
-    "xmlrpc",
-    "rpc",
-	"metaweblog"
+    "node.js", "express", "xml", "xmlrpc", "rpc", "metaweblog"
   ],
-  "author": "Nathan Cartwright",
+  "author": {
+    "name": "Nathan Cartwright"
+  },
+  "contributors": [
+    {
+      "name": "Andy Potanin",
+      "email": "andy.potanin@UsabilityDynamics.com",
+      "url": "http://UsabilityDynamics.com"
+    }
+  ],
   "license": "MIT"
 }
