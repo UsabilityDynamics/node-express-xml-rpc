@@ -1,9 +1,14 @@
 {
   "name": "express-xml-rpc",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "./lib/express-xml-rpc.js",
   "dependencies": {
-    "node-xml": ">= 1.0.0"
+    "node-xml": ">= 1.0.0",
+    "http-proxy": "~0.10.3",
+    "extend": "~1.2.1",
+    "express": "~3.4.4",
+    "string": "~1.6.1",
+    "request": "~2.27.0"
   },
   "description": "Express middleware and router support for XML-RPC",
   "directories": {
@@ -35,7 +40,12 @@
     "url": "git+ssh://git@github.com:UsabilityDynamics/node-express-xml-rpc#master"
   },
   "keywords": [
-    "node.js", "express", "xml", "xmlrpc", "rpc", "metaweblog"
+    "node.js",
+    "express",
+    "xml",
+    "xmlrpc",
+    "rpc",
+    "metaweblog"
   ],
   "author": {
     "name": "Nathan Cartwright"

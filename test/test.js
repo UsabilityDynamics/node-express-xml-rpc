@@ -1,42 +1,160 @@
-
-
-var assert = require('assert');
-
-var os = require('os');
+var assert = require( 'assert' );
+var os = require( 'os' );
 var host = os.hostname();
-var port = process.env.PORT || 18776;
+var http = require( 'http' );
+var express = require( 'express' );
+var xrpc = require( '..' );
+var xmlrpc = require( 'xmlrpc' );
 
-var http = require('http'),
-    express = require('express');
+module.exports = {
 
-var xrpc = require('..');
-var app = express();
+  /**
+   * Start XML-RPC Server
+   *
+   * @param done
+   */
+  before: function( done ) {
 
-var data = { test: 999 };
+    // Create Express Application.
+    module.app = express();
 
-app.configure(function () {
-    app.use(xrpc.xmlRpc);
-});
+    // Configure Application.
+    module.app.configure( function() {
 
-app.post('/RPC', xrpc.route({
-    echo: function (msg, callback) {
-        callback(null, msg);
+      // Standard Middleware
+      this.use( express.json() );
+
+      // XML-RPC Middleware
+      this.use( xrpc.xmlRpc );
+
+      // XML-RPC Router
+      this.post( '/RPC', xrpc.route( {
+
+        /**
+         * Echo Request
+         *
+         * @param msg
+         * @param callback
+         */
+        echo: function( msg, callback ) {
+          callback( null, msg );
+        },
+
+        /**
+         * Return Pong
+         *
+         * @param msg
+         * @param callback
+         */
+        ping: function ping( msg, callback ) {
+
+          callback( null, {
+            success: true,
+            message: 'pong'
+          });
+        },
+
+        /**
+         * Return Headers
+         * @param msg
+         * @param callback
+         */
+        headers: function headers( msg, callback ) {
+
+          callback( null, {
+            success: true,
+            message: 'pong',
+            headers: this.headers
+          });
+        }
+
+      } ) );
+
+      this.server = http.createServer( module.app ).listen( process.env.PORT || 18776, 'localhost', function() {
+        // console.log( 'Server started on [%s:%s].', this.address().address, this.address().port );
+        done();
+      } );
+
+    });
+
+  },
+
+  "XML-RPC": {
+
+    /**
+     * Echo Test
+     * @param done
+     */
+    "can make echo request.": function( done ) {
+
+      var client = xmlrpc.createClient({
+        host: module.app.server.address().address,
+        port: module.app.server.address().port,
+        path: '/RPC'
+      });
+
+      // Sends a method call to the XML-RPC server
+      client.methodCall( 'echo', [{ test: 999 }], function( error, value ) {
+        assert.equal( value.test, 999 );
+        done();
+      });
+
+    },
+
+    /**
+     * Ping Pong test.
+     *
+     * @param done
+     */
+    "can make ping-pong request.": function( done ) {
+
+      var client = xmlrpc.createClient({
+        host: module.app.server.address().address,
+        port: module.app.server.address().port,
+        path: '/RPC'
+      });
+
+      // Sends a method call to the XML-RPC server
+      client.methodCall( 'ping', [{ "test": true }], function( error, res ) {
+        assert.equal( res.success, true );
+        assert.equal( res.message, 'pong' );
+        done();
+      });
+
+    },
+
+    /**
+     * Test Server Header Reading
+     *
+     * @param done
+     */
+    "can handle headers.": function( done ) {
+
+      var client = xmlrpc.createClient({
+        host: module.app.server.address().address,
+        port: module.app.server.address().port,
+        path: '/RPC'
+      });
+
+      // Sends a method call to the XML-RPC server
+      client.methodCall( 'headers', [{ "test": true }], function( error, res ) {
+        assert.equal( res.success, true );
+        assert.equal( res.headers['user-agent'], 'NodeJS XML-RPC Client' );
+        done();
+      });
+
     }
-}));
 
-var server = http.createServer(app).listen(port);
+  },
 
+  /**
+   * Shutdown Server
+   *
+   * @param done
+   */
+  after: function( done ) {
+    module.app.server.close();
+    done();
+  }
 
-// the following code is not part of this module (it is needed to create a client for this test)
-var xmlrpc = require('xmlrpc');
-
-var client = xmlrpc.createClient({ host: host, port: port, path: '/RPC' });
-
-// Sends a method call to the XML-RPC server
-client.methodCall('echo', [data], function (error, value) {
-    assert.equal(value.test, 999);
-    console.log('express-xmlrpc test complete. If no errors are thrown then the test is successful.\n');
-    server.close();
-});
-
-
+};
